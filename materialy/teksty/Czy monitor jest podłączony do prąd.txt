@@ -1,0 +1,13 @@
+Czy monitor jest podłączony do prądu za pomocą odpowiedniego kabla zasilającego?
+
+1.  Upewnij się, że urządzenia są wyłączone na czas podłączania.
+    
+2.  Podłącz jeden koniec przewodu HDMI do portu w laptopie.
+    
+3.  Podłącz drugi koniec przewodu HDMI do portu HDMI w monitorze.
+    
+4.  Włącz monitor, a następnie uruchom laptopa.
+    
+5.  W menu ekranowym monitora wybierz jako źródło obrazu HDMI.
+    
+6.  Otwórz ustawienia ekranu w systemie, aby sprawdzić i dopasować rozdzielczość.
