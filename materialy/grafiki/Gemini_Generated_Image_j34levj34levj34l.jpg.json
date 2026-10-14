@@ -1,0 +1,11 @@
+{
+  "tytul": "Projekt",
+  "opis": "Test pierwszego zdejcia grafiki wektorowej wygenerowanej przez ai",
+  "narzedzia": [
+    "gemini"
+  ],
+  "szczegoly": "",
+  "prompt": "wygeneruj zdjecie o kursie ai w szczecinie",
+  "refleksja": "",
+  "data": "2026-10-14"
+}
