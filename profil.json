@@ -1,0 +1,20 @@
+{
+  "imie": "Szymon Płaza",
+  "kierunek": "Technik Informatyk",
+  "powitanie": "Witam i żegnam :3",
+  "opis": "Tak",
+  "zdjecie": "",
+  "zainteresowania": [
+    "Sztuczna inteligencja",
+    "Kreatywność",
+    "Nowe technologie"
+  ],
+  "umiejetnosci": [
+    "Tworzenie skutecznych promptów",
+    "Generowanie materiałów multimedialnych",
+    "Sprawdzanie i poprawianie wyników AI"
+  ],
+  "opis_umiejetnosci": "Podczas kursu łączę własne pomysły z możliwościami narzędzi AI.",
+  "github": "",
+  "email": ""
+}
