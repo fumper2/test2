@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Quiz INF.03 i adresacja IP</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+:root{--bg:#eaf0f5;--card:#fff;--ink:#10212f;--mute:#5b6b7a;--line:#cfd9e2;--acc:#1f5fd0;--ok:#16895a;--bad:#c93a33;--okbg:#e2f5ec;--badbg:#fbe6e4;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0e1822;--card:#16232f;--ink:#e6eef5;--mute:#93a4b4;--line:#2a3b4a;--acc:#6aa2ff;--ok:#4cc38a;--bad:#ff7b72;--okbg:#14352a;--badbg:#3d1f1d}}
+:root[data-theme="dark"]{--bg:#0e1822;--card:#16232f;--ink:#e6eef5;--mute:#93a4b4;--line:#2a3b4a;--acc:#6aa2ff;--ok:#4cc38a;--bad:#ff7b72;--okbg:#14352a;--badbg:#3d1f1d}
+*{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 17px/1.5 "IBM Plex Sans",system-ui,sans-serif;min-height:100vh}
+main{max-width:640px;margin:0 auto;padding:20px 16px 40px}
+h1{font-size:28px;line-height:1.2;margin:8px 0 6px;font-weight:600}
+p{margin:0 0 14px}
+.mute{color:var(--mute)}
+.mono{font-family:"IBM Plex Mono",ui-monospace,monospace}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden;position:relative}
+.pad{padding:20px}
+button{font:inherit;cursor:pointer;color:inherit}
+button:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+.cats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:16px 0}
+.cat{display:flex;gap:10px;align-items:flex-start;text-align:left;background:var(--card);border:1.5px solid var(--line);border-radius:10px;padding:12px}
+.cat[aria-pressed="true"]{border-color:var(--acc);background:color-mix(in srgb,var(--acc) 10%,var(--card))}
+.cat b{display:block;font-weight:600}
+.cat small{color:var(--mute);font-size:14px}
+.go{width:100%;background:var(--acc);color:#fff;border:0;border-radius:10px;padding:14px;font-weight:600;font-size:18px}
+.go:disabled{opacity:.45;cursor:not-allowed}
+.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;font-size:15px}
+.timer{height:8px;background:var(--line)}
+.timer i{display:block;height:100%;width:100%;background:var(--acc);transform-origin:left;transition:background .3s}
+.timer i.low{background:var(--bad)}
+.tag{font-size:14px;color:var(--mute)}
+.q{font-size:20px;line-height:1.4;font-weight:600;margin:6px 0 16px}
+.opts{display:grid;gap:10px}
+.opt{display:block;width:100%;text-align:left;background:var(--card);border:1.5px solid var(--line);border-radius:10px;padding:12px 14px;font-family:"IBM Plex Mono",ui-monospace,monospace;font-weight:500;font-size:16px;overflow-wrap:anywhere}
+.opt:hover:not(:disabled){border-color:var(--acc)}
+.opt.ok{border-color:var(--ok);background:var(--okbg)}
+.opt.bad{border-color:var(--bad);background:var(--badbg)}
+.opt:disabled{cursor:default}
+.fb{margin-top:16px;padding:12px 14px;border-radius:10px;background:var(--bg);font-size:16px}
+.fb b.ok{color:var(--ok)}.fb b.bad{color:var(--bad)}
+.next{margin-top:14px;width:100%;border:1.5px solid var(--acc);background:transparent;color:var(--acc);border-radius:10px;padding:12px;font-weight:600}
+.big{font-size:56px;font-weight:600;line-height:1;margin:6px 0}
+.row{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-top:1px solid var(--line)}
+.bar{height:6px;background:var(--line);border-radius:3px;margin-top:6px}
+.bar i{display:block;height:100%;background:var(--ok);border-radius:3px}
+.hide{display:none}
+@media(max-width:420px){.cats{grid-template-columns:1fr}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<main>
+
+<section id="start">
+  <h1>Quiz: INF.03 i adresacja IP</h1>
+  <p class="mute">Odpowiadaj szybko: im więcej czasu zostaje na zegarze i im dłuższa seria poprawnych odpowiedzi, tym więcej punktów.</p>
+  <div class="cats" id="cats"></div>
+  <button class="go" id="play">Zacznij grę</button>
+  <p class="mute" id="best" style="margin-top:14px"></p>
+</section>
+
+<section id="game" class="hide">
+  <div class="top"><span id="prog" class="mono"></span><span id="score" class="mono"></span></div>
+  <div class="card">
+    <div class="timer"><i id="tbar"></i></div>
+    <div class="pad">
+      <div class="tag" id="tag"></div>
+      <div class="q" id="q"></div>
+      <div class="opts" id="opts"></div>
+      <div id="fb" class="fb hide" role="status"></div>
+      <button class="next hide" id="next">Dalej</button>
+    </div>
+  </div>
+</section>
+
+<section id="end" class="hide">
+  <div class="card pad">
+    <div class="mute">Twój wynik</div>
+    <div class="big mono" id="fscore"></div>
+    <p id="fmsg" class="mute"></p>
+    <div id="breakdown"></div>
+    <button class="go" id="again" style="margin-top:16px">Zagraj ponownie</button>
+  </div>
+</section>
+
+</main>
+<script>
+(function(){
+var TIME=20;
+var CATS=[
+ {id:"web",name:"HTML, CSS, JS",desc:"strony WWW"},
+ {id:"php",name:"PHP",desc:"skrypty po stronie serwera"},
+ {id:"sql",name:"SQL",desc:"bazy danych"},
+ {id:"ip",name:"Adresacja IP",desc:"maski, podsieci, adresy"}
+];
+// Pierwsza odpowiedź w każdym pytaniu jest poprawna; kolejność losowana w grze.
+var Q=[
+ ["web","Który znacznik HTML5 oznacza blok nawigacji?",["<nav>","<menu>","<navigate>","<links>"],"<nav> to znacznik semantyczny przeznaczony na główne menu i bloki nawigacyjne."],
+ ["web","Która właściwość CSS ustawia odstęp między treścią elementu a jego obramowaniem?",["padding","margin","border-spacing","outline-offset"],"padding to margines wewnętrzny, a margin to odstęp na zewnątrz obramowania."],
+ ["web","Którym selektorem CSS wybierzesz element z atrybutem id=\"menu\"?",["#menu",".menu","menu#","*menu"],"Znak # oznacza id, a kropka klasę."],
+ ["web","Która instrukcja JavaScript pobiera element strony po jego id?",["document.getElementById(\"x\")","document.getElement(\"x\")","page.findId(\"x\")","document.id(\"x\")"],"Metoda getElementById zwraca element o podanym identyfikatorze lub null."],
+ ["web","Czym różni się === od == w JavaScript?",["=== porównuje wartość i typ","=== przypisuje wartość","== porównuje tylko typy","Niczym, to synonimy"],"Operator === nie wykonuje konwersji typów, więc 5 === \"5\" daje false."],
+ ["php","Od jakiego znaku zaczyna się nazwa zmiennej w PHP?",["$","@","#","&"],"Każda zmienna w PHP zaczyna się od znaku dolara, np. $imie."],
+ ["php","Która tablica superglobalna zawiera dane formularza wysłanego metodą POST?",["$_POST","$_GET","$_FORM","$_SEND"],"$_POST zawiera dane z formularza z method=\"post\", a $_GET dane z adresu URL."],
+ ["php","Jak poprawnie otwiera się blok kodu PHP?",["<?php","<php>","<%php","<script php>"],"Kod PHP umieszcza się między <?php a ?>."],
+ ["php","Która funkcja nawiązuje połączenie z serwerem MySQL w bibliotece mysqli?",["mysqli_connect()","mysql_open()","db_connect()","mysqli_start()"],"mysqli_connect(host, user, haslo, baza) zwraca obiekt połączenia."],
+ ["php","Która instrukcja wypisuje tekst na stronie?",["echo","print_text","write","console.log"],"Najczęściej używa się echo; istnieje też print."],
+ ["sql","Które zapytanie wybierze wszystkie rekordy z tabeli uczniowie?",["SELECT * FROM uczniowie;","GET ALL uczniowie;","SELECT uczniowie *;","SHOW * FROM uczniowie;"],"SELECT * FROM nazwa_tabeli zwraca wszystkie kolumny i wiersze."],
+ ["sql","Które polecenie dodaje nowy rekord do tabeli?",["INSERT INTO","UPDATE","ALTER TABLE","CREATE ROW"],"INSERT INTO tabela (kolumny) VALUES (wartości) dodaje wiersz, a UPDATE zmienia istniejące."],
+ ["sql","Której klauzuli użyjesz, by przefiltrować wyniki po funkcji agregującej, np. COUNT(*) > 3?",["HAVING","WHERE","ORDER BY","LIMIT"],"WHERE działa przed grupowaniem, a HAVING po GROUP BY."],
+ ["sql","Które złączenie zwraca tylko te wiersze, które mają dopasowanie w obu tabelach?",["INNER JOIN","LEFT JOIN","FULL OUTER JOIN","CROSS JOIN"],"INNER JOIN pomija wiersze bez pary, a LEFT JOIN zachowuje wszystkie z lewej tabeli."],
+ ["sql","Które polecenie usuwa całą tabelę razem z jej strukturą?",["DROP TABLE","DELETE FROM","TRUNCATE ROW","REMOVE TABLE"],"DELETE FROM usuwa tylko rekordy, a DROP TABLE usuwa tabelę."],
+ ["ip","Ile bitów ma adres IPv4?",["32","64","128","16"],"IPv4 to 4 oktety po 8 bitów, razem 32. IPv6 ma 128 bitów."],
+ ["ip","Jak zapisać maskę /24 w postaci dziesiętnej?",["255.255.255.0","255.255.0.0","255.255.255.128","255.0.0.0"],"24 jedynki to trzy pełne oktety: 255.255.255.0."],
+ ["ip","Który z adresów należy do puli adresów prywatnych?",["172.16.5.4","172.32.0.1","192.169.1.1","11.0.0.1"],"Pule prywatne: 10.0.0.0/8, 172.16.0.0/12 (172.16–172.31) i 192.168.0.0/16."],
+ ["ip","Ile adresów hostów można przydzielić w sieci z maską /26?",["62","64","30","126"],"/26 zostawia 6 bitów na hosty: 2^6 − 2 = 62 (bez adresu sieci i rozgłoszeniowego)."],
+ ["ip","Jaki jest adres rozgłoszeniowy (broadcast) sieci 192.168.1.0/24?",["192.168.1.255","192.168.1.254","192.168.0.255","255.255.255.255"],"W broadcast wszystkie bity części hosta mają wartość 1, czyli ostatni oktet to 255."]
+];
+var sel={web:true,php:true,sql:true,ip:true};
+var $=function(i){return document.getElementById(i)};
+function shuffle(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t}return a}
+function show(id){["start","game","end"].forEach(function(s){$(s).classList.toggle("hide",s!==id)})}
+function getBest(){try{return parseInt(localStorage.getItem("quiz-inf03-best")||"0",10)||0}catch(e){return 0}}
+function setBest(v){try{localStorage.setItem("quiz-inf03-best",String(v))}catch(e){}}
+function renderStart(){
+  var box=$("cats");box.innerHTML="";
+  CATS.forEach(function(c){
+    var b=document.createElement("button");b.className="cat";b.setAttribute("aria-pressed",sel[c.id]);
+    b.innerHTML="<span><b></b><small></small></span>";
+    b.querySelector("b").textContent=c.name;b.querySelector("small").textContent=c.desc;
+    b.onclick=function(){sel[c.id]=!sel[c.id];renderStart()};
+    box.appendChild(b);
+  });
+  $("play").disabled=!CATS.some(function(c){return sel[c.id]});
+  var best=getBest();$("best").textContent=best?"Twój rekord: "+best+" pkt":"";
+}
+var qs,idx,score,streak,stats,tick,left,locked;
+function start(){
+  qs=shuffle(Q.filter(function(q){return sel[q[0]]}));
+  idx=0;score=0;streak=0;stats={};
+  CATS.forEach(function(c){stats[c.id]={ok:0,all:0}});
+  show("game");ask();
+}
+function ask(){
+  var q=qs[idx];locked=false;
+  $("prog").textContent="Pytanie "+(idx+1)+" z "+qs.length;
+  $("score").textContent=score+" pkt"+(streak>1?" · seria "+streak:"");
+  $("tag").textContent=CATS.filter(function(c){return c.id===q[0]})[0].name;
+  $("q").textContent=q[1];
+  $("fb").classList.add("hide");$("next").classList.add("hide");
+  var box=$("opts");box.innerHTML="";
+  shuffle(q[2].map(function(t,i){return{t:t,ok:i===0}})).forEach(function(o){
+    var b=document.createElement("button");b.className="opt";b.textContent=o.t;b.dataset.ok=o.ok?"1":"0";
+    b.onclick=function(){answer(b)};box.appendChild(b);
+  });
+  left=TIME;bar();clearInterval(tick);
+  tick=setInterval(function(){left-=0.1;bar();if(left<=0){clearInterval(tick);answer(null)}},100);
+}
+function bar(){var i=$("tbar");i.style.transform="scaleX("+Math.max(left,0)/TIME+")";i.classList.toggle("low",left<=5)}
+function answer(btn){
+  if(locked)return;locked=true;clearInterval(tick);
+  var q=qs[idx],good=btn&&btn.dataset.ok==="1",fb=$("fb");
+  stats[q[0]].all++;
+  Array.prototype.forEach.call($("opts").children,function(b){
+    b.disabled=true;if(b.dataset.ok==="1")b.classList.add("ok");else if(b===btn)b.classList.add("bad");
+  });
+  var msg;
+  if(good){
+    streak++;stats[q[0]].ok++;
+    var pts=100+Math.round(left*5)+(streak>1?Math.min(streak-1,5)*10:0);score+=pts;
+    msg='<b class="ok">Dobrze! +'+pts+' pkt.</b> ';
+  }else{
+    streak=0;msg='<b class="bad">'+(btn?"Niestety źle.":"Czas minął.")+'</b> ';
+  }
+  fb.innerHTML=msg;fb.appendChild(document.createTextNode(q[3]));fb.classList.remove("hide");
+  $("score").textContent=score+" pkt"+(streak>1?" · seria "+streak:"");
+  var n=$("next");n.textContent=idx+1<qs.length?"Dalej":"Zobacz wynik";n.classList.remove("hide");n.focus();
+}
+function finish(){
+  show("end");$("fscore").textContent=score+" pkt";
+  var best=getBest(),rec=score>best;if(rec)setBest(score);
+  var ok=0,all=0;for(var k in stats){ok+=stats[k].ok;all+=stats[k].all}
+  var pct=all?Math.round(ok/all*100):0;
+  $("fmsg").textContent="Poprawne odpowiedzi: "+ok+" z "+all+" ("+pct+"%). "+(rec?"Nowy rekord!":"Rekord: "+best+" pkt.");
+  var bd=$("breakdown");bd.innerHTML="";
+  CATS.forEach(function(c){
+    var s=stats[c.id];if(!s.all)return;
+    var r=document.createElement("div");r.className="row";
+    r.innerHTML='<div style="flex:1"><div></div><div class="bar"><i></i></div></div><span class="mono"></span>';
+    r.querySelector("div div").textContent=c.name;
+    r.querySelector("i").style.width=Math.round(s.ok/s.all*100)+"%";
+    r.querySelector("span").textContent=s.ok+"/"+s.all;
+    bd.appendChild(r);
+  });
+}
+$("next").onclick=function(){idx++;if(idx<qs.length)ask();else finish()};
+$("play").onclick=start;
+$("again").onclick=function(){show("start");renderStart()};
+renderStart();
+})();
+</script>
+</body>
+</html>
